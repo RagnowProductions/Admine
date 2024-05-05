@@ -6,6 +6,7 @@ ChatService:RegisterChatCallback(Enum.ChatCallbackType.OnCreatingChatWindow, fun
     return false -- Disables the default chat window
 end)
 
+-- Start of /give function
 ChatService:RegisterProcessCommandsFunction("GiveItem", function(speaker, message)
     local command, args = message:match("^/give%s+(%w+)%s+(.+)$")
     
@@ -101,3 +102,67 @@ ChatService:RegisterProcessCommandsFunction("KillPlayer", function(speaker, mess
         end
     end
 end)
+-- End of /kill function
+
+-- Start of /clear function
+ChatService:RegisterProcessCommandsFunction("ClearInventory", function(speaker, message)
+    local command, targetSpecifier = message:match("^/clear%s+(.+)$")
+    
+    if command and targetSpecifier then
+        local targetPlayer = nil
+        
+        if targetSpecifier == "@a" then
+            -- Clear inventory for all players
+            for _, player in ipairs(Players:GetPlayers()) do
+                clearPlayerInventory(player)
+            end
+        elseif targetSpecifier == "@s" then
+            -- Clear inventory for the speaker
+            clearPlayerInventory(speaker)
+        elseif targetSpecifier == "@r" then
+            -- Clear inventory for a random player
+            local randomPlayer = Players:GetPlayers()[math.random(1, #Players:GetPlayers())]
+            
+            if randomPlayer then
+                clearPlayerInventory(randomPlayer)
+            end
+        elseif targetSpecifier == "@p" then
+            -- Clear inventory for the nearest player
+            local nearestPlayer = nil
+            local nearestDistance = math.huge
+            
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= speaker then
+                    local distance = (player.Character.HumanoidRootPart.Position - speaker.Character.HumanoidRootPart.Position).Magnitude
+                    
+                    if distance < nearestDistance then
+                        nearestPlayer = player
+                        nearestDistance = distance
+                    end
+                end
+            end
+            
+            if nearestPlayer then
+                clearPlayerInventory(nearestPlayer)
+            end
+        else
+            -- Clear inventory for the specified player by username
+            targetPlayer = Players:FindFirstChild(targetSpecifier)
+            
+            if targetPlayer then
+                clearPlayerInventory(targetPlayer)
+            end
+        end
+    end
+end)
+
+function clearPlayerInventory(player)
+    local backpack = player:FindFirstChildOfClass("Backpack")
+    
+    if backpack then
+        for _, item in ipairs(backpack:GetChildren()) do
+            item:Destroy()
+        end
+    end
+end
+-- End of /clear function
