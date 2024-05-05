@@ -48,3 +48,56 @@ ChatService:RegisterProcessCommandsFunction("GiveItem", function(speaker, messag
         end
     end
 end)
+-- End of /give function
+
+-- Start of /kill function
+ChatService:RegisterProcessCommandsFunction("KillPlayer", function(speaker, message)
+    local command, targetSpecifier = message:match("^/kill%s+(.+)$")
+    
+    if command and targetSpecifier then
+        local targetPlayer = nil
+        
+        if targetSpecifier == "@a" then
+            -- Kill all players
+            for _, player in ipairs(Players:GetPlayers()) do
+                player.Character:BreakJoints()
+            end
+        elseif targetSpecifier == "@s" then
+            -- Kill the speaker
+            speaker.Character:BreakJoints()
+        elseif targetSpecifier == "@r" then
+            -- Kill a random player
+            local randomPlayer = Players:GetPlayers()[math.random(1, #Players:GetPlayers())]
+            
+            if randomPlayer then
+                randomPlayer.Character:BreakJoints()
+            end
+        elseif targetSpecifier == "@p" then
+            -- Kill the nearest player
+            local nearestPlayer = nil
+            local nearestDistance = math.huge
+            
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= speaker then
+                    local distance = (player.Character.HumanoidRootPart.Position - speaker.Character.HumanoidRootPart.Position).Magnitude
+                    
+                    if distance < nearestDistance then
+                        nearestPlayer = player
+                        nearestDistance = distance
+                    end
+                end
+            end
+            
+            if nearestPlayer then
+                nearestPlayer.Character:BreakJoints()
+            end
+        else
+            -- Kill the specified player by username
+            targetPlayer = Players:FindFirstChild(targetSpecifier)
+            
+            if targetPlayer then
+                targetPlayer.Character:BreakJoints()
+            end
+        end
+    end
+end)
