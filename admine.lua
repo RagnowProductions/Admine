@@ -166,3 +166,10 @@ function clearPlayerInventory(player)
     end
 end
 -- End of /clear function
+
+-- If no player, end the script.
+if targetPlayer then
+    print("Command has been executed.")
+else
+    ChatService:SendMessage(speaker, "No targets matched selector", Enum.ChatColor.BrightRed)
+end
