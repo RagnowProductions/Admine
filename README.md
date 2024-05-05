@@ -7,3 +7,4 @@ Current Commands
   <li>/kill</li>
   <li>/clear</li>
 </ul>
+Please make sure you have an Items folder in Workspace to implement.
